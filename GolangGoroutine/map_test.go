@@ -1,0 +1,28 @@
+package GolangGoroutine
+
+import (
+	"fmt"
+	"sync"
+	"testing"
+)
+
+// lebih aman dari race condition
+func AddToMap(data *sync.Map, group *sync.WaitGroup, value int) {
+	defer group.Done()
+	group.Add(1)
+	data.Store(value, value)
+}
+
+func TestMap(t *testing.T) {
+	data := &sync.Map{}
+	group := &sync.WaitGroup{}
+
+	for i := 0; i < 100; i++ {
+		go AddToMap(data, group, i)
+	}
+	group.Wait()
+	data.Range(func(key, value interface{}) bool {
+		fmt.Println("Key:", key, "Value:", value)
+		return true
+	})
+}
