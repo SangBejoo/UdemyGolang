@@ -1,0 +1,6 @@
+github.com/SangBejoo/go-say-hello v1.0.0 h1:Gzp1tZHU9lZMNrpzSDMcCj9E02U/5GcxqpR+Yd1otSM=
+github.com/SangBejoo/go-say-hello v1.0.0/go.mod h1:fmoqhveBVr5lcl1dFp1D5S9GRAhny1VpY89yEPm4JAQ=
+github.com/SangBejoo/go-say-hello v1.5.0 h1:K8m3hW7Xx0Cj6/ke2lfaofg+N1NgHXKQfETJ+CHVvUM=
+github.com/SangBejoo/go-say-hello v1.5.0/go.mod h1:fmoqhveBVr5lcl1dFp1D5S9GRAhny1VpY89yEPm4JAQ=
+github.com/SangBejoo/go-say-hello/v2 v2.0.0 h1:V03R7HjKHyi0F+Jhzu4Vu+dVsJLVpRt8A9JpVz+GgCA=
+github.com/SangBejoo/go-say-hello/v2 v2.0.0/go.mod h1:ySOPUaDqoT+XAXaa2uLPVT4+Gkq2temGzCC2tMiS+NQ=
