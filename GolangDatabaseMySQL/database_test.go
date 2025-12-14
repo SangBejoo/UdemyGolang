@@ -113,10 +113,10 @@ func TestInjection(t *testing.T) {
 	defer db.Close()
 	ctx := context.Background()
 
-	username := "admin"
-	password := "admin"
+	username := "admin11"
+	password := "admin12"
 
-	script := "SELECT username FROM user WHERE username = '" + username + "' AND password='" + password + "' limit 1"
+	script := "SELECT username FROM user WHERE username = '" + username + "' AND password = '" + password + "' Limit 1" // ini jangan gampang sql injection
 	rows, err := db.QueryContext(ctx, script)
 	if err != nil {
 		panic(err)
@@ -133,4 +133,73 @@ func TestInjection(t *testing.T) {
 	} else {
 		fmt.Println("gagal login")
 	}
+}
+
+// gunakan sql dengan parameter
+func TestSqlWithParameter(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+	ctx := context.Background()
+
+	username := "admin';"
+	password := "admin"
+
+	script := "SELECT username FROM user WHERE username = ? AND password = ? LIMIT 1" // gunakan ini agar aman dari sql injection
+	rows, err := db.QueryContext(ctx, script, username, password)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("sukses login")
+	} else {
+		fmt.Println("gagal login")
+	}
+}
+
+func TestExcecWithParameter(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	username := "admin'; drop table user; #"
+	password := "admin"
+
+	script := "INSERT INTO user (username, password) VALUES (?, ?)"
+	_, err := db.ExecContext(ctx, script, username, password)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Succes Insert New Customer")
+}
+
+// ini untuk auto increment
+func TestSqlAutoIncrement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+	email := "ayub@gmail.com"
+	comment := "admin"
+
+	script := "INSERT INTO comments(email, comment) values (?, ?)"
+	result, err := db.ExecContext(ctx, script, email, comment)
+	if err != nil {
+		panic(err)
+	}
+
+	insertId, err := result.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Succes Insert New comment with id :", insertId)
 }
