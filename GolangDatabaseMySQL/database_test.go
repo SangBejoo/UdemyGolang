@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -202,4 +203,71 @@ func TestSqlAutoIncrement(t *testing.T) {
 	}
 
 	fmt.Println("Succes Insert New comment with id :", insertId)
+}
+
+// gunakan prepare statement untuk menggunakan query yang sama dengan parameter berbeda
+func TestPrepareStatement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	script := "INSERT INTO comments(email, comment) values (?, ?)"
+	stmt, err := db.PrepareContext(ctx, script)
+	if err != nil {
+		panic(err)
+	}
+
+	defer stmt.Close()
+
+	for i := 0; i < 10; i++ {
+		email := "ayubs" + strconv.Itoa(i) + "@gmail.com"
+		comment := "komentar :" + strconv.Itoa(i) + "dan komentar"
+		result, err := stmt.ExecContext(ctx, email, comment)
+		if err != nil {
+			panic(err)
+		}
+		insertId, err := result.LastInsertId()
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Succes Insert New comment with id :", insertId)
+	}
+}
+
+// database transaction
+func TestTransaction(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	script := "INSERT INTO comments(email, comment) values (?, ?)"
+
+	// lakukan transaction
+	for i := 0; i < 10; i++ {
+		email := "ayubs" + strconv.Itoa(i) + "@gmail.com"
+		comment := "komentar :" + strconv.Itoa(i) + "dan komentar"
+		result, err := tx.ExecContext(ctx, script, email, comment)
+		if err != nil {
+			panic(err)
+		}
+		insertId, err := result.LastInsertId()
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Succes Insert New comment with id :", insertId)
+	}
+
+	err = tx.Rollback() // bisa roll back dan commit
+	if err != nil {
+		panic(err)
+	}
 }
